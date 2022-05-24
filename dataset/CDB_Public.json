@@ -1,0 +1,22 @@
+{
+	"name": "CDB_Public",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "CosmosDB_Public",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "CosmosDbSqlApiCollection",
+		"schema": {
+			"type": "object",
+			"properties": {
+				"testId": {
+					"type": "string"
+				}
+			}
+		},
+		"typeProperties": {
+			"collectionName": "test1"
+		}
+	}
+}
