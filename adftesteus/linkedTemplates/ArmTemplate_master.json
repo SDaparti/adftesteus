@@ -7,13 +7,13 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "adftesteus"
 		},
-		"CosmosDB_wPE_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'CosmosDB_wPE'"
-		},
 		"CosmosDB_Public_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'CosmosDB_Public'"
+		},
+		"CosmosDB_wPE_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'CosmosDB_wPE'"
 		},
 		"CosmosDB_PE_properties_privateLinkResourceId": {
 			"type": "string",

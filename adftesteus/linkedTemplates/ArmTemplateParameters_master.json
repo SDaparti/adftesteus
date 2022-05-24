@@ -5,10 +5,10 @@
 		"factoryName": {
 			"value": "adftesteus"
 		},
-		"CosmosDB_wPE_connectionString": {
+		"CosmosDB_Public_connectionString": {
 			"value": ""
 		},
-		"CosmosDB_Public_connectionString": {
+		"CosmosDB_wPE_connectionString": {
 			"value": ""
 		},
 		"CosmosDB_PE_properties_privateLinkResourceId": {
