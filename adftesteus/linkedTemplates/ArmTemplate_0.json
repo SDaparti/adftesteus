@@ -1,0 +1,295 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "adftesteus"
+		},
+		"CosmosDB_Public_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'CosmosDB_Public'"
+		},
+		"CosmosDB_wPE_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'CosmosDB_wPE'"
+		},
+		"CosmosDB_PE_properties_privateLinkResourceId": {
+			"type": "string",
+			"defaultValue": "/subscriptions/2054e6b1-d0de-4404-98f2-b2f3a9bad8a5/resourceGroups/test-rg/providers/Microsoft.DocumentDb/databaseAccounts/sqltest71204-eus"
+		},
+		"CosmosDB_PE_properties_groupId": {
+			"type": "string",
+			"defaultValue": "Sql"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/default')]",
+			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks",
+			"apiVersion": "2018-06-01",
+			"properties": {},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CosmosDB_Public')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Linked service to Cosmos DB on public internet / ARIR",
+				"annotations": [],
+				"type": "CosmosDb",
+				"typeProperties": {
+					"connectionString": "[parameters('CosmosDB_Public_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ManagedIR')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "Managed",
+				"typeProperties": {
+					"computeProperties": {
+						"location": "East US",
+						"dataFlowProperties": {
+							"computeType": "General",
+							"coreCount": 8,
+							"timeToLive": 5,
+							"cleanup": false
+						}
+					}
+				},
+				"managedVirtualNetwork": {
+					"type": "ManagedVirtualNetworkReference",
+					"referenceName": "default"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/default/CosmosDB_PE')]",
+			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks/managedPrivateEndpoints",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"privateLinkResourceId": "[parameters('CosmosDB_PE_properties_privateLinkResourceId')]",
+				"groupId": "[parameters('CosmosDB_PE_properties_groupId')]"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CDB_Public')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "CosmosDB_Public",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "CosmosDbSqlApiCollection",
+				"schema": {
+					"type": "object",
+					"properties": {
+						"testId": {
+							"type": "string"
+						}
+					}
+				},
+				"typeProperties": {
+					"collectionName": "test1"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/CosmosDB_Public')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CosmosDB_wPE')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Linked service to Azure Cosmos DB with PE",
+				"annotations": [],
+				"type": "CosmosDb",
+				"typeProperties": {
+					"connectionString": "[parameters('CosmosDB_wPE_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "ManagedIR",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/ManagedIR')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CDB_PE')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "CosmosDB_wPE",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "CosmosDbSqlApiCollection",
+				"schema": {
+					"type": "object",
+					"properties": {
+						"Name": {
+							"type": "string"
+						},
+						"Address": {
+							"type": "object",
+							"properties": {
+								"City": {
+									"type": "string"
+								},
+								"ZipCode": {
+									"type": "string"
+								},
+								"State": {
+									"type": "string"
+								},
+								"County": {
+									"type": "string"
+								}
+							}
+						},
+						"partitionKey": {
+							"type": "string"
+						},
+						"LastName": {
+							"type": "string"
+						},
+						"Parents": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"FamilyName": {
+										"type": "null"
+									},
+									"FirstName": {
+										"type": "string"
+									}
+								}
+							}
+						},
+						"Children": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"FamilyName": {
+										"type": "null"
+									},
+									"FirstName": {
+										"type": "string"
+									},
+									"Gender": {
+										"type": "string"
+									},
+									"Grade": {
+										"type": "integer"
+									},
+									"Pets": {
+										"type": "array",
+										"items": {
+											"type": "object",
+											"properties": {
+												"GivenName": {
+													"type": "string"
+												}
+											}
+										}
+									}
+								}
+							}
+						},
+						"IsRegistered": {
+							"type": "boolean"
+						}
+					}
+				},
+				"typeProperties": {
+					"collectionName": "provColl1"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/CosmosDB_wPE')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Copy test - CDB2CDB')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "This is copy test from one Azure Cosmos DB SQL API to another.",
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "CosmosDbSqlApiSource",
+								"query": "select * from c where c.id = 'id with spaces'",
+								"preferredRegions": []
+							},
+							"sink": {
+								"type": "CosmosDbSqlApiSink",
+								"writeBehavior": "upsert",
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "CDB_PE",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "CDB_Public",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/CDB_PE')]",
+				"[concat(variables('factoryId'), '/datasets/CDB_Public')]"
+			]
+		}
+	]
+}

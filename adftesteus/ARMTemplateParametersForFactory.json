@@ -1,0 +1,21 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "adftesteus"
+		},
+		"CosmosDB_wPE_connectionString": {
+			"value": ""
+		},
+		"CosmosDB_Public_connectionString": {
+			"value": ""
+		},
+		"CosmosDB_PE_properties_privateLinkResourceId": {
+			"value": "/subscriptions/2054e6b1-d0de-4404-98f2-b2f3a9bad8a5/resourceGroups/test-rg/providers/Microsoft.DocumentDb/databaseAccounts/sqltest71204-eus"
+		},
+		"CosmosDB_PE_properties_groupId": {
+			"value": "Sql"
+		}
+	}
+}

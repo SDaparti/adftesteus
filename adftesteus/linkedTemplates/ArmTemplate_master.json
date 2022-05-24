@@ -1,0 +1,70 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "adftesteus"
+		},
+		"CosmosDB_wPE_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'CosmosDB_wPE'"
+		},
+		"CosmosDB_Public_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'CosmosDB_Public'"
+		},
+		"CosmosDB_PE_properties_privateLinkResourceId": {
+			"type": "string",
+			"defaultValue": "/subscriptions/2054e6b1-d0de-4404-98f2-b2f3a9bad8a5/resourceGroups/test-rg/providers/Microsoft.DocumentDb/databaseAccounts/sqltest71204-eus"
+		},
+		"CosmosDB_PE_properties_groupId": {
+			"type": "string",
+			"defaultValue": "Sql"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "adftesteus_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"CosmosDB_Public_connectionString": {
+						"value": "[parameters('CosmosDB_Public_connectionString')]"
+					},
+					"CosmosDB_wPE_connectionString": {
+						"value": "[parameters('CosmosDB_wPE_connectionString')]"
+					},
+					"CosmosDB_PE_properties_privateLinkResourceId": {
+						"value": "[parameters('CosmosDB_PE_properties_privateLinkResourceId')]"
+					},
+					"CosmosDB_PE_properties_groupId": {
+						"value": "[parameters('CosmosDB_PE_properties_groupId')]"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}
