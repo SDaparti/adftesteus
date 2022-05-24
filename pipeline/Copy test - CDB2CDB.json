@@ -18,7 +18,6 @@
 				"typeProperties": {
 					"source": {
 						"type": "CosmosDbSqlApiSource",
-						"query": "select * from c where c.id = 'id with spaces'",
 						"preferredRegions": []
 					},
 					"sink": {
