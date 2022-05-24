@@ -4,7 +4,7 @@
 		"description": "This is copy test from one Azure Cosmos DB SQL API to another.",
 		"activities": [
 			{
-				"name": "Copy data1",
+				"name": "SQL_SYNC",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
