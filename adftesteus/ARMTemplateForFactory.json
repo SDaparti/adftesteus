@@ -290,6 +290,37 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/CosmosDB_Public')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CDB_PE_Trigger')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Trigger to run and sync CBD w/ PE and CDB /wo PE",
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "Copy test - CDB2CDB",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Hour",
+						"interval": 4,
+						"startTime": "2022-05-24T13:00:00Z",
+						"timeZone": "UTC"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/Copy test - CDB2CDB')]"
+			]
 		}
 	]
 }
